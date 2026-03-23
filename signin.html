@@ -24,7 +24,7 @@ html, body {
 
 .view {
   position: relative;
-  overflow-y: auto;
+  min-height: 100vh;
 }
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(170,255,0,.2);border-radius:4px;}
@@ -772,6 +772,160 @@ table.ev-tbl td{padding:11px 16px;font-size:12px;}
   input,
   textarea {
     font-size: 16px;
+  }
+
+}
+
+html {
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+@media (max-width: 480px) {
+
+  /* Reduce everything */
+  .cv-hero-title,
+  .rv-brand,
+  .ev-cmd-headline {
+    font-size: 16px !important;
+  }
+
+  /* Cards padding */
+  .invite-card,
+  .cv-feedback-card,
+  .rv-card,
+  .ev-card,
+  .pv-card {
+    padding: 12px !important;
+  }
+
+  /* Reduce gaps */
+  .cv-content,
+  .rv-content,
+  .ev-content,
+  .pv-content {
+    padding: 10px !important;
+  }
+
+  /* Buttons full width */
+  button {
+    width: 100%;
+  }
+
+  /* Inputs fix */
+  input, textarea {
+    font-size: 16px;
+  }
+
+  /* Journey fix */
+  .journey-track {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+}
+@media (max-width: 768px) {
+
+  /* Remove fixed layouts */
+  .view {
+    position: relative !important;
+  }
+
+  /* Stack layouts */
+  .cv-body,
+  .rv-body,
+  .ev-body,
+  .pv-body {
+    flex-direction: column !important;
+  }
+
+  /* Hide sidebars */
+  .cv-sidebar,
+  .rv-sidebar,
+  .ev-left-nav,
+  .pv-sidebar {
+    display: none !important;
+  }
+
+  /* Content full width */
+  .cv-content,
+  .rv-content,
+  .ev-content,
+  .pv-content {
+    width: 100% !important;
+    padding: 12px;
+  }
+
+  /* Fix HERO spacing */
+  .cv-hero {
+    padding: 16px;
+  }
+
+  /* Fix steps */
+  .cv-hero-steps {
+    flex-direction: column;
+  }
+
+  /* FIX VIDEO UI (IMPORTANT) */
+  .cv-room-stage {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cv-self-panel {
+    width: 100%;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .cv-self-tile {
+    flex: 1;
+  }
+
+  /* Answer box */
+  .cv-answer-bar {
+    width: 95%;
+    bottom: 12px;
+  }
+
+  /* ALL grids collapse */
+  .rv-cmd-hero,
+  .rv-pipeline,
+  .ev-dept-grid,
+  .pv-kpi-strip,
+  .rv-g2,
+  .rv-g3,
+  .pv-g2,
+  .pv-g3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tables scroll */
+  .rv-table-wrap,
+  .ev-table-wrap {
+    overflow-x: auto;
+  }
+
+}
+@media (max-width: 1024px) {
+
+  /* Reduce sidebar instead of hiding */
+  .cv-sidebar,
+  .rv-sidebar,
+  .ev-left-nav,
+  .pv-sidebar {
+    width: 70px;
+  }
+
+  /* Hide text, keep icons */
+  .cv-sb-item span,
+  .rv-sidebar-item span,
+  .ev-nav-item span,
+  .pv-sidebar-item span {
+    display: none;
   }
 
 }
