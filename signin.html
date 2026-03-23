@@ -663,7 +663,118 @@ table.ev-tbl td{padding:11px 16px;font-size:12px;}
   }
 
 }
+/* ================= MOBILE FIX (FINAL) ================= */
+@media (max-width: 768px) {
 
+  /* Allow normal flow */
+  .view {
+    position: relative !important;
+  }
+
+  /* Stack everything vertically */
+  .cv-body,
+  .rv-body,
+  .ev-body,
+  .pv-body {
+    flex-direction: column;
+  }
+
+  /* Remove fixed sidebars */
+  .cv-sidebar,
+  .rv-sidebar,
+  .ev-left-nav,
+  .pv-sidebar {
+    display: none !important;
+  }
+
+  /* Full width content */
+  .cv-content,
+  .rv-content,
+  .ev-content,
+  .pv-content {
+    width: 100%;
+    padding: 14px;
+  }
+
+  /* Fix cards */
+  .invite-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Hero responsive */
+  .cv-hero {
+    padding: 18px;
+  }
+
+  .cv-hero-title {
+    font-size: 18px;
+  }
+
+  /* Steps wrap */
+  .cv-hero-steps {
+    flex-wrap: wrap;
+  }
+
+  /* ALL grids → 1 column */
+  .rv-cmd-hero,
+  .rv-pipeline,
+  .ev-dept-grid,
+  .pv-kpi-strip,
+  .rv-g2,
+  .rv-g3,
+  .pv-g2,
+  .pv-g3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Upload layout */
+  .rv-upload-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* VIDEO FIX (VERY IMPORTANT) */
+  .cv-room-stage {
+    flex-direction: column;
+  }
+
+  .cv-self-panel {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .cv-self-tile {
+    width: 48%;
+  }
+
+  /* Answer bar fix */
+  .cv-answer-bar {
+    width: 95%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
+  }
+
+  /* Tables scroll */
+  .rv-table-wrap,
+  .ev-table-wrap {
+    overflow-x: auto;
+  }
+
+  /* Fix buttons */
+  button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  /* Inputs */
+  input,
+  textarea {
+    font-size: 16px;
+  }
+
+}
 </style>
 </head>
 <body>
