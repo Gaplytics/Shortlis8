@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Shortlis8 — AI Interviews That Decide Faster</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS & RESET
+═══════════════════════════════════════════ */
+
+
+
+:root{
+  --bg:#080A0E;
+  --bg2:#0A0C12;
+  --bg3:#0E1018;
+  --bg4:#12151F;
+  --lime:#AAFF00;
+  --lime2:rgba(170,255,0,.12);
+  --lime3:rgba(170,255,0,.06);
+  --lime4:rgba(170,255,0,.25);
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --text:#E8EAF4;
+  --text2:rgba(232,234,244,.55);
+  --text3:rgba(232,234,244,.28);
+  --red:#FF4D4D;
+  --amber:#FFB340;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(170,255,0,.25);border-radius:4px;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;}
+
+/* ═══════════════════════════════════════════
+   NOISE OVERLAY
+═══════════════════════════════════════════ */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:60px;
+  display:flex;align-items:center;padding:0 40px;
+  background:rgba(8,10,14,.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-brand{
+  font-family:'Clash Display',sans-serif;
+  font-size:20px;font-weight:700;
+  letter-spacing:-.5px;color:#fff;
+  display:flex;align-items:center;gap:2px;
+}
+.nav-brand .eight{
+  color:var(--lime);
+  font-size:22px;
+  position:relative;top:-1px;
+}
+.nav-links{display:flex;gap:4px;margin-left:40px;}
+.nav-link{
+  padding:6px 14px;border-radius:7px;
+  font-size:13px;font-weight:500;
+  color:var(--text2);
+  transition:all .15s;
+}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,.06);}
+.nav-link.active{color:#fff;background:rgba(170,255,0,.1);color:var(--lime);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.btn-ghost{
+  padding:8px 18px;border-radius:8px;
+  font-size:13px;font-weight:600;
+  color:var(--text2);
+  border:1px solid var(--border2);
+  background:transparent;
+  transition:all .2s;
+}
+.btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.25);}
+.btn-primary{
+  padding:9px 22px;border-radius:8px;
+  font-size:13px;font-weight:700;
+  color:#000;background:var(--lime);
+  transition:all .2s;
+  box-shadow:0 0 20px rgba(170,255,0,.2);
+}
+.btn-primary:hover{background:#BBFF22;box-shadow:0 0 30px rgba(170,255,0,.35);transform:translateY(-1px);}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:120px 40px 80px;
+  overflow:hidden;
+}
+/* Grid background */
+.hero::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(170,255,0,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(170,255,0,.035) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%);
+}
+/* Glow orb */
+.hero-glow{
+  position:absolute;
+  top:-200px;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse, rgba(170,255,0,.07) 0%, transparent 65%);
+  pointer-events:none;
+}
+.hero-inner{
+  position:relative;z-index:1;
+  max-width:1120px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1fr 520px;gap:80px;align-items:center;
+}
+.hero-left{}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(170,255,0,.08);
+  border:1px solid rgba(170,255,0,.2);
+  border-radius:20px;
+  padding:5px 14px 5px 8px;
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;
+  color:var(--lime);
+  margin-bottom:28px;
+}
+.hero-tag-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--lime);
+  animation:pulse 1.2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
+
+.hero-h1{
+  font-family:'Clash Display',sans-serif;
+  font-size:72px;font-weight:700;
+  line-height:0.97;letter-spacing:-3px;
+  color:#fff;
+  margin-bottom:28px;
+  text-align:left;
+}
+.hero-h1 em{
+  font-style:normal;
+  color:var(--lime);
+  display:block;
+  margin-bottom:2px;
+}
+.hero-h1 .line-indent{padding-left:0;}
+
+.hero-sub{
+  font-size:17px;font-weight:400;
+  color:var(--text2);
+  line-height:1.65;
+  max-width:480px;
+  margin-bottom:40px;
+}
+.hero-ctas{display:flex;align-items:center;gap:14px;margin-bottom:52px;}
+.btn-hero{
+  padding:14px 32px;border-radius:10px;
+  font-size:15px;font-weight:700;
+  color:#000;background:var(--lime);
+  transition:all .25s;
+  box-shadow:0 0 30px rgba(170,255,0,.25);
+  display:flex;align-items:center;gap:8px;
+}
+.btn-hero:hover{background:#BBFF22;box-shadow:0 0 50px rgba(170,255,0,.4);transform:translateY(-2px);}
+.btn-hero-ghost{
+  padding:14px 28px;border-radius:10px;
+  font-size:15px;font-weight:600;
+  color:var(--text);
+  border:1px solid var(--border2);
+  background:transparent;
+  transition:all .2s;
+  display:flex;align-items:center;gap:8px;
+}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.3);color:#fff;background:rgba(255,255,255,.04);}
+
+.hero-social-proof{
+  display:flex;align-items:center;gap:16px;
+}
+.hero-faces{display:flex;}
+.hero-face{
+  width:30px;height:30px;border-radius:50%;
+  border:2px solid var(--bg);
+  background:var(--bg3);
+  margin-left:-8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  color:var(--lime);
+  overflow:hidden;
+}
+.hero-face:first-child{margin-left:0;}
+.hero-proof-text{font-size:12px;color:var(--text3);}
+.hero-proof-text strong{color:var(--text2);font-weight:600;}
+
+/* Hero right — live demo card */
+.hero-right{position:relative;}
+.demo-card{
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(170,255,0,.05);
+}
+.demo-card-top{
+  background:var(--bg3);
+  border-bottom:1px solid var(--border);
+  padding:14px 18px;
+  display:flex;align-items:center;gap:10px;
+}
+.demo-dots{display:flex;gap:6px;}
+.demo-dot{width:10px;height:10px;border-radius:50%;}
+.demo-dot.r{background:#FF5F57;}
+.demo-dot.y{background:#FEBC2E;}
+.demo-dot.g{background:#28C840;}
+.demo-card-title{
+  font-family:'Geist Mono',monospace;
+  font-size:11px;color:var(--text3);
+  margin-left:8px;
+}
+.demo-live{
+  margin-left:auto;
+  display:flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;
+  color:var(--lime);
+  background:rgba(170,255,0,.08);
+  border:1px solid rgba(170,255,0,.15);
+  border-radius:10px;
+  padding:3px 9px;
+}
+.demo-live-dot{width:5px;height:5px;border-radius:50%;background:var(--lime);animation:pulse 1s infinite;}
+.demo-body{padding:20px;}
+.demo-role{
+  font-family:'Clash Display',sans-serif;
+  font-size:16px;font-weight:600;color:#fff;
+  margin-bottom:4px;
+}
+.demo-meta{font-size:12px;color:var(--text3);margin-bottom:18px;}
+
+/* Candidate list in demo */
+.demo-candidates{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.demo-cand{
+  background:var(--bg4);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 14px;
+  display:flex;align-items:center;gap:12px;
+  transition:all .2s;
+  animation:slideIn .4s ease both;
+}
+.demo-cand:nth-child(1){animation-delay:.1s;}
+.demo-cand:nth-child(2){animation-delay:.25s;}
+.demo-cand:nth-child(3){animation-delay:.4s;}
+.demo-cand:nth-child(4){animation-delay:.55s;}
+@keyframes slideIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
+.demo-cand-avatar{
+  width:34px;height:34px;border-radius:10px;
+  background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  flex-shrink:0;
+}
+.demo-cand-info{flex:1;}
+.demo-cand-name{font-size:13px;font-weight:600;color:#fff;}
+.demo-cand-role{font-size:11px;color:var(--text3);}
+.demo-score-ring{
+  position:relative;width:38px;height:38px;flex-shrink:0;
+}
+.demo-score-ring svg{transform:rotate(-90deg);}
+.demo-score-ring circle{fill:none;stroke-width:3;}
+.demo-score-val{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Geist Mono',monospace;
+  font-size:10px;font-weight:600;
+}
+.demo-status{
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:7px;
+  flex-shrink:0;
+}
+.s-shortlisted{background:rgba(170,255,0,.12);color:var(--lime);}
+.s-reviewing{background:rgba(255,179,64,.1);color:var(--amber);}
+.s-rejected{background:rgba(255,77,77,.1);color:var(--red);}
+
+.demo-footer{
+  border-top:1px solid var(--border);
+  padding-top:14px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.demo-stat{text-align:center;}
+.demo-stat-val{
+  font-family:'Geist Mono',monospace;
+  font-size:20px;font-weight:600;color:var(--lime);
+  line-height:1;
+}
+.demo-stat-label{font-size:10px;color:var(--text3);margin-top:3px;}
+.demo-action-btn{
+  padding:8px 18px;border-radius:8px;
+  background:var(--lime);color:#000;
+  font-size:12px;font-weight:700;
+  transition:all .2s;
+}
+.demo-action-btn:hover{background:#BBFF22;}
+
+/* ═══════════════════════════════════════════
+   LOGOS STRIP
+═══════════════════════════════════════════ */
+.logos-strip{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:28px 40px;
+  display:flex;align-items:center;justify-content:center;gap:0;
+  overflow:hidden;
+  position:relative;
+}
+.logos-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.2px;color:var(--text3);
+  white-space:nowrap;margin-right:48px;flex-shrink:0;
+}
+.logos-track{
+  display:flex;align-items:center;gap:48px;
+  animation:scroll 25s linear infinite;
+  flex-shrink:0;
+}
+.logos-track2{
+  display:flex;align-items:center;gap:48px;
+  animation:scroll 25s linear infinite;
+  flex-shrink:0;
+}
+.logos-marquee{display:flex;gap:48px;overflow:hidden;flex:1;}
+.logos-marquee-inner{display:flex;gap:48px;animation:scroll 25s linear infinite;}
+@keyframes scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.logo-name{
+  font-family:'Clash Display',sans-serif;
+  font-size:16px;font-weight:600;
+  color:rgba(255,255,255,.18);
+  white-space:nowrap;
+  transition:color .2s;
+}
+.logo-name:hover{color:rgba(255,255,255,.45);}
+
+/* ═══════════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════════ */
+.section{
+  padding:100px 40px;
+  max-width:1120px;margin:0 auto;
+}
+.section-label{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--lime);margin-bottom:12px;
+}
+.section-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:48px;font-weight:700;
+  line-height:1.05;letter-spacing:-1.5px;
+  color:#fff;margin-bottom:16px;
+}
+.section-sub{
+  font-size:16px;color:var(--text2);
+  max-width:520px;line-height:1.65;
+}
+.section-header{margin-bottom:64px;}
+
+/* Steps */
+.steps-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  background:var(--border);
+  border-radius:20px;
+  overflow:hidden;
+}
+.step-card{
+  background:var(--bg2);
+  padding:40px 36px;
+  position:relative;
+  overflow:hidden;
+  transition:background .2s;
+}
+.step-card:hover{background:var(--bg3);}
+.step-card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--lime), transparent);
+  opacity:0;
+  transition:opacity .3s;
+}
+.step-card:hover::before{opacity:1;}
+.step-num{
+  font-family:'Geist Mono',monospace;
+  font-size:11px;font-weight:600;
+  color:var(--lime);
+  background:var(--lime2);
+  border:1px solid rgba(170,255,0,.2);
+  border-radius:6px;
+  padding:3px 9px;
+  display:inline-block;
+  margin-bottom:24px;
+}
+.step-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--bg4);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+  margin-bottom:20px;
+}
+.step-h{
+  font-family:'Clash Display',sans-serif;
+  font-size:20px;font-weight:600;color:#fff;
+  margin-bottom:10px;letter-spacing:-.3px;
+}
+.step-p{font-size:13px;color:var(--text2);line-height:1.65;}
+
+/* ═══════════════════════════════════════════
+   FEATURES
+═══════════════════════════════════════════ */
+.features-wrap{padding:0 40px 100px;}
+.features-inner{max-width:1120px;margin:0 auto;}
+.features-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.feat-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:32px;
+  transition:all .25s;
+  position:relative;
+  overflow:hidden;
+}
+.feat-card:hover{
+  border-color:rgba(170,255,0,.2);
+  background:var(--bg3);
+  transform:translateY(-2px);
+  box-shadow:0 20px 40px rgba(0,0,0,.4), 0 0 30px rgba(170,255,0,.04);
+}
+.feat-card.wide{grid-column:span 2;}
+.feat-icon{
+  width:46px;height:46px;border-radius:12px;
+  background:var(--lime2);border:1px solid rgba(170,255,0,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:18px;
+}
+.feat-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:19px;font-weight:600;color:#fff;
+  margin-bottom:8px;letter-spacing:-.2px;
+}
+.feat-desc{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:16px;}
+.feat-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.feat-tag{
+  font-size:10px;font-weight:600;
+  color:var(--text3);
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:3px 9px;
+}
+/* Wide card extra visual */
+.feat-wide-inner{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+.feat-wide-visual{
+  background:var(--bg4);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px;
+}
+.score-breakdown{display:flex;flex-direction:column;gap:10px;}
+.score-row{display:flex;align-items:center;gap:12px;}
+.score-label{font-size:11px;color:var(--text2);width:120px;flex-shrink:0;}
+.score-bar-bg{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:3px;background:var(--lime);}
+.score-pct{font-family:'Geist Mono',monospace;font-size:11px;color:var(--lime);width:30px;text-align:right;}
+
+/* ═══════════════════════════════════════════
+   PRICING
+═══════════════════════════════════════════ */
+.pricing-wrap{padding:0 40px 100px;}
+.pricing-inner{max-width:1120px;margin:0 auto;}
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:64px;
+}
+.plan-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 32px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  transition:all .2s;
+}
+.plan-card:hover{border-color:var(--border2);}
+.plan-card.featured{
+  background:var(--bg3);
+  border:1.5px solid rgba(170,255,0,.35);
+  box-shadow:0 0 50px rgba(170,255,0,.07);
+}
+.plan-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--lime);color:#000;
+  font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:1px;
+  padding:4px 14px;border-radius:20px;
+  white-space:nowrap;
+}
+.plan-name{
+  font-family:'Clash Display',sans-serif;
+  font-size:13px;font-weight:600;
+  text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--text3);
+  margin-bottom:16px;
+}
+.plan-price{
+  display:flex;align-items:baseline;gap:4px;
+  margin-bottom:6px;
+}
+.plan-amount{
+  font-family:'Clash Display',sans-serif;
+  font-size:52px;font-weight:700;
+  line-height:1;letter-spacing:-2px;
+  color:#fff;
+}
+.plan-amount.lime{color:var(--lime);font-size:32px;letter-spacing:-1px;}
+.plan-sub{font-size:12px;color:var(--text3);margin-bottom:24px;}
+.plan-divider{height:1px;background:var(--border);margin-bottom:22px;}
+.plan-features{display:flex;flex-direction:column;gap:11px;margin-bottom:28px;flex:1;}
+.plan-feat{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:13px;color:var(--text2);
+}
+.plan-check{color:var(--lime);font-size:13px;flex-shrink:0;margin-top:1px;}
+.plan-check.dim{color:var(--text3);}
+.plan-cta{
+  width:100%;
+  padding:13px;border-radius:10px;
+  font-size:14px;font-weight:700;
+  transition:all .2s;
+  font-family:'IBM Plex Sans',sans-serif;
+}
+.plan-cta-outline{
+  background:transparent;
+  border:1.5px solid var(--border2);
+  color:var(--text);
+}
+.plan-cta-outline:hover{border-color:rgba(255,255,255,.3);color:#fff;background:rgba(255,255,255,.04);}
+.plan-cta-lime{
+  background:var(--lime);color:#000;
+  border:none;
+  box-shadow:0 0 20px rgba(170,255,0,.2);
+}
+.plan-cta-lime:hover{background:#BBFF22;box-shadow:0 0 35px rgba(170,255,0,.35);transform:translateY(-1px);}
+
+/* ═══════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════ */
+.faq-wrap{padding:0 40px 100px;}
+.faq-inner{max-width:760px;margin:0 auto;}
+.faq-header{text-align:center;margin-bottom:56px;}
+.faq-list{display:flex;flex-direction:column;gap:2px;}
+.faq-item{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  transition:border-color .2s;
+}
+.faq-item.open{border-color:rgba(170,255,0,.2);}
+.faq-q{
+  width:100%;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px;
+  background:none;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:14px;font-weight:600;
+  color:#fff;text-align:left;
+  gap:16px;
+}
+.faq-chevron{
+  width:24px;height:24px;border-radius:6px;
+  background:var(--bg4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--text3);
+  transition:all .2s;flex-shrink:0;
+}
+.faq-item.open .faq-chevron{background:var(--lime2);color:var(--lime);transform:rotate(180deg);}
+.faq-a{
+  display:none;
+  padding:0 24px 20px;
+  font-size:13px;color:var(--text2);
+  line-height:1.7;
+}
+.faq-item.open .faq-a{display:block;}
+
+/* ═══════════════════════════════════════════
+   CTA SECTION
+═══════════════════════════════════════════ */
+.cta-section{
+  padding:0 40px 120px;
+}
+.cta-inner{
+  max-width:1120px;margin:0 auto;
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:28px;
+  padding:80px 60px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.cta-inner::before{
+  content:'';
+  position:absolute;
+  top:-200px;left:50%;transform:translateX(-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse, rgba(170,255,0,.08) 0%, transparent 65%);
+  pointer-events:none;
+}
+.cta-inner::after{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(170,255,0,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(170,255,0,.025) 1px, transparent 1px);
+  background-size:40px 40px;
+}
+.cta-content{position:relative;z-index:1;}
+.cta-eyebrow{
+  font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.5px;color:var(--lime);margin-bottom:16px;
+}
+.cta-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:52px;font-weight:700;
+  line-height:1.0;letter-spacing:-2px;
+  color:#fff;margin-bottom:16px;
+}
+.cta-sub{
+  font-size:16px;color:var(--text2);
+  max-width:480px;margin:0 auto 40px;
+}
+.cta-btns{display:flex;align-items:center;justify-content:center;gap:14px;}
+.cta-note{
+  margin-top:20px;
+  font-size:12px;color:var(--text3);
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  border-top:1px solid var(--border);
+  padding:40px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-brand{
+  font-family:'Clash Display',sans-serif;
+  font-size:16px;font-weight:700;color:rgba(255,255,255,.4);
+}
+.footer-brand span{color:rgba(170,255,0,.5);}
+.footer-copy{font-size:12px;color:var(--text3);}
+.footer-links{display:flex;gap:20px;}
+.footer-link{font-size:12px;color:var(--text3);transition:color .15s;}
+.footer-link:hover{color:var(--text2);}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.hero-tag{animation:fadeUp .5s ease both;}
+.hero-h1{animation:fadeUp .55s .1s ease both;}
+.hero-sub{animation:fadeUp .55s .2s ease both;}
+.hero-ctas{animation:fadeUp .55s .3s ease both;}
+.hero-social-proof{animation:fadeUp .55s .4s ease both;}
+.hero-right{animation:fadeUp .7s .2s ease both;}
+/* ═══════════════════════════════════════════
+   DEMO MODAL
+═══════════════════════════════════════════ */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+.modal-box{
+  background:var(--bg2);
+  border:1px solid rgba(170,255,0,.2);
+  border-radius:24px;
+  padding:48px 44px;
+  width:100%;max-width:480px;
+  position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(170,255,0,.06);
+  animation:modalIn .25s ease both;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal-close{
+  position:absolute;top:18px;right:18px;
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--border);
+  color:var(--text2);font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;
+}
+.modal-close:hover{background:rgba(255,255,255,.12);color:#fff;}
+.modal-eyebrow{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--lime);margin-bottom:10px;
+}
+.modal-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:28px;font-weight:700;
+  letter-spacing:-.8px;color:#fff;
+  margin-bottom:6px;
+}
+.modal-sub{
+  font-size:13px;color:var(--text2);
+  margin-bottom:28px;line-height:1.6;
+}
+.modal-form{display:flex;flex-direction:column;gap:14px;}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-field{display:flex;flex-direction:column;gap:5px;}
+.modal-label{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;
+  color:var(--text3);
+}
+.modal-input{
+  background:var(--bg4);
+  border:1.5px solid var(--border);
+  border-radius:9px;
+  padding:11px 14px;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:13px;color:#fff;
+  outline:none;
+  transition:border-color .15s;
+}
+.modal-input::placeholder{color:var(--text3);}
+.modal-input:focus{border-color:rgba(170,255,0,.4);box-shadow:0 0 0 3px rgba(170,255,0,.07);}
+.modal-select{
+  background:var(--bg4);
+  border:1.5px solid var(--border);
+  border-radius:9px;
+  padding:11px 14px;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:13px;color:#fff;
+  outline:none;
+  appearance:none;
+  cursor:pointer;
+  transition:border-color .15s;
+}
+.modal-select:focus{border-color:rgba(170,255,0,.4);}
+.modal-submit{
+  margin-top:4px;
+  padding:14px;border-radius:10px;
+  background:var(--lime);color:#000;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:14px;font-weight:700;
+  border:none;cursor:pointer;
+  transition:all .2s;
+  box-shadow:0 0 20px rgba(170,255,0,.2);
+}
+.modal-submit:hover{background:#BBFF22;box-shadow:0 0 35px rgba(170,255,0,.35);transform:translateY(-1px);}
+.modal-footer-note{
+  margin-top:14px;
+  text-align:center;
+  font-size:11px;color:var(--text3);
+}
+/* Success state */
+.modal-success{
+  display:none;
+  text-align:center;
+  padding:20px 0;
+}
+.modal-success.show{display:block;}
+.modal-success-icon{
+  font-size:48px;margin-bottom:16px;
+}
+.modal-success-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:24px;font-weight:700;
+  color:#fff;letter-spacing:-.5px;
+  margin-bottom:8px;
+}
+.modal-success-sub{font-size:13px;color:var(--text2);line-height:1.6;}
+
+/* ═══════════════════════════════════════════
+   MOBILE RESPONSIVENESS & REFINEMENTS
+═══════════════════════════════════════════ */
+
+/* 1. Global Fluidity Fixes */
+.hero-inner, .section, .features-inner, .pricing-inner, .cta-inner {
+    max-width: 100%;
+}
+
+/* 2. Responsive Adjustments */
+@media (max-width: 1024px) {
+    .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 60px;
+        text-align: center;
+    }
+    .hero-h1 { 
+        font-size: 56px; 
+        text-align: center;
+    }
+    .hero-sub { 
+        margin: 0 auto 40px; 
+    }
+    .hero-ctas, .hero-social-proof { 
+        justify-content: center; 
+    }
+    .hero-right {
+        max-width: 520px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Nav */
+    nav {
+        padding: 0 20px;
+    }
+    .nav-links {
+        display: none; /* Hide links on mobile - usually replaced by a burger menu */
+    }
+    
+    /* Hero */
+    .hero {
+        padding: 100px 20px 60px;
+    }
+    .hero-h1 {
+        font-size: 42px;
+        letter-spacing: -1.5px;
+    }
+    .hero-ctas {
+        flex-direction: column;
+        width: 100%;
+    }
+    .btn-hero, .btn-hero-ghost {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Grids */
+    .steps-grid {
+        grid-template-columns: 1fr;
+        background: transparent;
+        gap: 16px;
+    }
+    .step-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    .feat-card.wide {
+        grid-column: span 1;
+    }
+    .feat-wide-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    /* Sections */
+    .section {
+        padding: 60px 20px;
+    }
+    .section-title {
+        font-size: 32px;
+    }
+
+    /* CTA Section */
+    .cta-inner {
+        padding: 60px 24px;
+    }
+    .cta-title {
+        font-size: 36px;
+    }
+    .cta-btns {
+        flex-direction: column;
+    }
+
+    /* Modal */
+    .modal-box {
+        padding: 40px 24px;
+        margin: 10px;
+    }
+    .modal-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* Footer */
+    footer {
+        flex-direction: column;
+        gap: 24px;
+        text-align: center;
+    }
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-h1 {
+        font-size: 36px;
+    }
+    .demo-meta {
+        font-size: 10px;
+    }
+    .demo-cand-info {
+        max-width: 140px; /* Prevent text overflow in small cards */
+    }
+    .demo-status {
+        display: none; /* Hide status tag on tiny screens to save space */
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- DEMO REQUEST MODAL -->
+<!-- DEV HANDOFF NOTE: wire modal-submit to your CRM/backend (HubSpot, Salesforce, etc.) -->
+<!-- DEV HANDOFF NOTE: Sign in button → link to app.shortlis8.ai/login once auth is ready -->
+<div class="modal-overlay" id="demoModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <!-- Form view -->
+    <div id="modalForm">
+      <div class="modal-eyebrow">Book a Demo</div>
+      <h2 class="modal-title">See Shortlis8 in action.</h2>
+      <p class="modal-sub">Fill in your details and we'll reach out within 4 business hours to schedule a personalised demo.</p>
+      <div class="modal-form">
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="modal-label">First name</label>
+            <input class="modal-input" type="text" placeholder="Priya" id="f-fname"/>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Last name</label>
+            <input class="modal-input" type="text" placeholder="Kapoor" id="f-lname"/>
+          </div>
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">Work email</label>
+          <input class="modal-input" type="email" placeholder="priya@company.com" id="f-email"/>
+        </div>
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="modal-label">Company</label>
+            <input class="modal-input" type="text" placeholder="Acme Corp" id="f-company"/>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Phone</label>
+            <input class="modal-input" type="tel" placeholder="+91 98765 43210" id="f-phone"/>
+          </div>
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">Team size</label>
+          <select class="modal-select" id="f-size">
+            <option value="" disabled selected>Select hiring team size</option>
+            <option>1–5 recruiters</option>
+            <option>6–20 recruiters</option>
+            <option>21–50 recruiters</option>
+            <option>50+ recruiters</option>
+          </select>
+        </div>
+        <button class="modal-submit" onclick="submitDemo()">Request Demo →</button>
+        <div class="modal-footer-note">No spam. No commitment. Just a conversation.</div>
+      </div>
+    </div>
+    <!-- Success view -->
+    <div class="modal-success" id="modalSuccess">
+      <div class="modal-success-icon">✅</div>
+      <div class="modal-success-title">You're on the list.</div>
+      <p class="modal-success-sub">We've received your request and will reach out to <span id="s-email" style="color:var(--lime);"></span> within 4 business hours to schedule your demo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Shortlis<span class="eight">8</span></div>
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#faq" class="nav-link">FAQ</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-ghost" title="Coming soon — dev handoff pending">Sign in</button>
+    <button class="btn-primary" onclick="openModal()">Book a Demo →</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-tag">
+        <div class="hero-tag-dot"></div>
+        AI Video Interview Platform
+      </div>
+      <h1 class="hero-h1">
+        Video interview
+        <em>everyone.</em>
+        Hire without chaos.
+      </h1>
+      <p class="hero-sub">
+        Shortlis8 conducts real video AI interviews — no interruptions, no rushed judgments. Every candidate gets a full, fair shot. You get a ranked shortlist the moment they're done.
+      </p>
+      <div class="hero-ctas">
+        <button class="btn-hero" onclick="openModal()">Book a Demo <span>→</span></button>
+        <button class="btn-hero-ghost">▶ &nbsp;Watch 2-min demo</button>
+      </div>
+      <div class="hero-social-proof">
+        <div class="hero-faces">
+          <div class="hero-face">AK</div>
+          <div class="hero-face">TR</div>
+          <div class="hero-face">MJ</div>
+          <div class="hero-face">SC</div>
+          <div class="hero-face">+</div>
+        </div>
+        <p class="hero-proof-text">Trusted by <strong>2,400+ recruiters</strong> across 180 companies</p>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="demo-card">
+        <div class="demo-card-top">
+          <div class="demo-dots">
+            <div class="demo-dot r"></div>
+            <div class="demo-dot y"></div>
+            <div class="demo-dot g"></div>
+          </div>
+          <span class="demo-card-title">shortlis8.ai — Live Interview Results</span>
+          <div class="demo-live"><div class="demo-live-dot"></div>LIVE</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-role">Senior Product Manager</div>
+          <div class="demo-meta">128 applied · 94 interviewed · Updated just now</div>
+          <div class="demo-candidates">
+            <!-- Candidate 1 -->
+            <div class="demo-cand">
+              <div class="demo-cand-avatar" style="color:#AAFF00;">PK</div>
+              <div class="demo-cand-info">
+                <div class="demo-cand-name">Priya Kapoor</div>
+                <div class="demo-cand-role">5 yrs · Ex-Flipkart · Strong comms</div>
+              </div>
+              <div class="demo-score-ring">
+                <svg width="38" height="38" viewBox="0 0 38 38">
+                  <circle cx="19" cy="19" r="15" stroke="rgba(255,255,255,.07)" stroke-width="3"/>
+                  <circle cx="19" cy="19" r="15" stroke="#AAFF00" stroke-width="3" stroke-dasharray="94.2" stroke-dashoffset="9.4" stroke-linecap="round"/>
+                </svg>
+                <div class="demo-score-val" style="color:#AAFF00;">90</div>
+              </div>
+              <div class="demo-status s-shortlisted">Shortlisted</div>
+            </div>
+            <!-- Candidate 2 -->
+            <div class="demo-cand">
+              <div class="demo-cand-avatar" style="color:#FFB340;">RS</div>
+              <div class="demo-cand-info">
+                <div class="demo-cand-name">Rahul Sharma</div>
+                <div class="demo-cand-role">3 yrs · Startup experience · Good</div>
+              </div>
+              <div class="demo-score-ring">
+                <svg width="38" height="38" viewBox="0 0 38 38">
+                  <circle cx="19" cy="19" r="15" stroke="rgba(255,255,255,.07)" stroke-width="3"/>
+                  <circle cx="19" cy="19" r="15" stroke="#FFB340" stroke-width="3" stroke-dasharray="94.2" stroke-dashoffset="28.3" stroke-linecap="round"/>
+                </svg>
+                <div class="demo-score-val" style="color:#FFB340;">70</div>
+              </div>
+              <div class="demo-status s-reviewing">Reviewing</div>
+            </div>
+            <!-- Candidate 3 -->
+            <div class="demo-cand">
+              <div class="demo-cand-avatar" style="color:#AAFF00;">AT</div>
+              <div class="demo-cand-info">
+                <div class="demo-cand-name">Ananya Tiwari</div>
+                <div class="demo-cand-role">7 yrs · B2B SaaS · Exceptional</div>
+              </div>
+              <div class="demo-score-ring">
+                <svg width="38" height="38" viewBox="0 0 38 38">
+                  <circle cx="19" cy="19" r="15" stroke="rgba(255,255,255,.07)" stroke-width="3"/>
+                  <circle cx="19" cy="19" r="15" stroke="#AAFF00" stroke-width="3" stroke-dasharray="94.2" stroke-dashoffset="3.8" stroke-linecap="round"/>
+                </svg>
+                <div class="demo-score-val" style="color:#AAFF00;">96</div>
+              </div>
+              <div class="demo-status s-shortlisted">Shortlisted</div>
+            </div>
+            <!-- Candidate 4 -->
+            <div class="demo-cand">
+              <div class="demo-cand-avatar" style="color:#FF4D4D;">VM</div>
+              <div class="demo-cand-info">
+                <div class="demo-cand-name">Vikram Mehta</div>
+                <div class="demo-cand-role">2 yrs · Junior level · Skills gap</div>
+              </div>
+              <div class="demo-score-ring">
+                <svg width="38" height="38" viewBox="0 0 38 38">
+                  <circle cx="19" cy="19" r="15" stroke="rgba(255,255,255,.07)" stroke-width="3"/>
+                  <circle cx="19" cy="19" r="15" stroke="#FF4D4D" stroke-width="3" stroke-dasharray="94.2" stroke-dashoffset="66" stroke-linecap="round"/>
+                </svg>
+                <div class="demo-score-val" style="color:#FF4D4D;">30</div>
+              </div>
+              <div class="demo-status s-rejected">Not a fit</div>
+            </div>
+          </div>
+          <div class="demo-footer">
+            <div class="demo-stat">
+              <div class="demo-stat-val">94</div>
+              <div class="demo-stat-label">Interviewed</div>
+            </div>
+            <div class="demo-stat">
+              <div class="demo-stat-val">12</div>
+              <div class="demo-stat-label">Shortlisted</div>
+            </div>
+            <div class="demo-stat">
+              <div class="demo-stat-val">8m</div>
+              <div class="demo-stat-label">Avg. time</div>
+            </div>
+            <button class="demo-action-btn">View Report →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS -->
+<div class="logos-strip">
+  <div class="logos-label">Trusted by teams at</div>
+  <div class="logos-marquee">
+    <div class="logos-marquee-inner">
+      <span class="logo-name">Razorpay</span>
+      <span class="logo-name">Meesho</span>
+      <span class="logo-name">CRED</span>
+      <span class="logo-name">PhonePe</span>
+      <span class="logo-name">Swiggy</span>
+      <span class="logo-name">Zepto</span>
+      <span class="logo-name">Groww</span>
+      <span class="logo-name">Unacademy</span>
+      <span class="logo-name">BrowserStack</span>
+      <span class="logo-name">Postman</span>
+      <span class="logo-name">Razorpay</span>
+      <span class="logo-name">Meesho</span>
+      <span class="logo-name">CRED</span>
+      <span class="logo-name">PhonePe</span>
+      <span class="logo-name">Swiggy</span>
+      <span class="logo-name">Zepto</span>
+      <span class="logo-name">Groww</span>
+      <span class="logo-name">Unacademy</span>
+      <span class="logo-name">BrowserStack</span>
+      <span class="logo-name">Postman</span>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div id="how">
+<div class="section">
+  <div class="section-header">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">From job post to<br>shortlist in hours.</h2>
+    <p class="section-sub">Three steps. No scheduling chaos. No bias. Just ranked candidates ready for your review.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">STEP 01</div>
+      <div class="step-icon">📋</div>
+      <h3 class="step-h">Build your AI Interview</h3>
+      <p class="step-p">Define the role, set your must-have criteria, and choose interview format — voice, video, or text. Shortlis8 generates tailored questions aligned to your job spec in under 2 minutes.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">STEP 02</div>
+      <div class="step-icon">🤖</div>
+      <h3 class="step-h">AI interviews every candidate</h3>
+      <p class="step-p">Share a link. Candidates complete their AI interview anytime, on any device. Our interviewer asks adaptive follow-ups, probes deeper, and evaluates responses in real-time — 24/7.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">STEP 03</div>
+      <div class="step-icon">⚡</div>
+      <h3 class="step-h">Get your shortlist instantly</h3>
+      <p class="step-p">Receive a ranked shortlist with scores, summaries, and recommendation tags the moment interviews complete. Your team reviews only the top candidates — human time, well spent.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FEATURES -->
+<div id="features" class="features-wrap">
+  <div class="features-inner">
+    <div class="section-header">
+      <div class="section-label">Platform features</div>
+      <h2 class="section-title">Everything your team<br>needs to hire smarter.</h2>
+    </div>
+    <div class="features-grid">
+      <!-- Wide card -->
+      <div class="feat-card wide">
+        <div class="feat-wide-inner">
+          <div>
+            <div class="feat-icon">📊</div>
+            <h3 class="feat-title">Multi-dimensional Scoring</h3>
+            <p class="feat-desc">Every candidate is evaluated across 6 dimensions — communication, technical depth, cultural alignment, role-fit, problem-solving, and motivation. No more gut-feel decisions.</p>
+            <div class="feat-tags">
+              <span class="feat-tag">Communication</span>
+              <span class="feat-tag">Technical Depth</span>
+              <span class="feat-tag">Cultural Fit</span>
+              <span class="feat-tag">Role Alignment</span>
+              <span class="feat-tag">Problem Solving</span>
+            </div>
+          </div>
+          <div class="feat-wide-visual">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:16px;">Ananya Tiwari — Score Breakdown</div>
+            <div class="score-breakdown">
+              <div class="score-row">
+                <div class="score-label">Communication</div>
+                <div class="score-bar-bg"><div class="score-bar-fill" style="width:95%;"></div></div>
+                <div class="score-pct">95</div>
+              </div>
+              <div class="score-row">
+                <div class="score-label">Technical Depth</div>
+                <div class="score-bar-bg"><div class="score-bar-fill" style="width:88%;background:#7B9FFF;"></div></div>
+                <div class="score-pct" style="color:#7B9FFF;">88</div>
+              </div>
+              <div class="score-row">
+                <div class="score-label">Role Alignment</div>
+                <div class="score-bar-bg"><div class="score-bar-fill" style="width:97%;"></div></div>
+                <div class="score-pct">97</div>
+              </div>
+              <div class="score-row">
+                <div class="score-label">Cultural Fit</div>
+                <div class="score-bar-bg"><div class="score-bar-fill" style="width:91%;background:#FFB340;"></div></div>
+                <div class="score-pct" style="color:#FFB340;">91</div>
+              </div>
+              <div class="score-row">
+                <div class="score-label">Problem Solving</div>
+                <div class="score-bar-bg"><div class="score-bar-fill" style="width:84%;background:#7B9FFF;"></div></div>
+                <div class="score-pct" style="color:#7B9FFF;">84</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Regular cards -->
+      <div class="feat-card">
+        <div class="feat-icon">🎯</div>
+        <h3 class="feat-title">Adaptive AI Questioning</h3>
+        <p class="feat-desc">The AI doesn't follow a rigid script. It reads candidate responses and dynamically adjusts — probing deeper on weak answers, exploring strengths further, just like an expert interviewer would.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Dynamic follow-ups</span>
+          <span class="feat-tag">Context-aware</span>
+          <span class="feat-tag">Role-specific</span>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🛡️</div>
+        <h3 class="feat-title">Bias-Free by Design</h3>
+        <p class="feat-desc">Every candidate gets the exact same interview experience — same questions, same scoring rubric, same evaluator. Shortlis8 removes unconscious bias from the screening stage entirely.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Blind scoring</span>
+          <span class="feat-tag">Consistent rubrics</span>
+          <span class="feat-tag">Audit trails</span>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <h3 class="feat-title">Instant Shortlist Reports</h3>
+        <p class="feat-desc">As soon as an interview completes, your hiring manager gets a concise summary — key strengths, red flags, a recommendation, and a full transcript. No waiting, no summaries to write.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Auto-summaries</span>
+          <span class="feat-tag">PDF export</span>
+          <span class="feat-tag">Shareable links</span>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔗</div>
+        <h3 class="feat-title">ATS & Calendar Integrations</h3>
+        <p class="feat-desc">Plug into your existing workflow. Shortlis8 syncs with Greenhouse, Lever, Workday, and more — and auto-schedules human interviews for shortlisted candidates directly from your calendar.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Greenhouse</span>
+          <span class="feat-tag">Lever</span>
+          <span class="feat-tag">Google Calendar</span>
+          <span class="feat-tag">Slack alerts</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="pricing" class="pricing-wrap">
+  <div class="pricing-inner">
+    <div class="section-header">
+      <div class="section-label">Plans</div>
+      <h2 class="section-title">The right plan for<br>how fast you move.</h2>
+      <p class="section-sub">Start with voice interviews. Scale with everything Shortlis8 has to offer.</p>
+    </div>
+    <div class="pricing-grid">
+
+      <!-- Starter -->
+      <div class="plan-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">
+          <span class="plan-amount">50</span>
+        </div>
+        <div class="plan-sub">voice interviews / month</div>
+        <div class="plan-divider"></div>
+        <div class="plan-features">
+          <div class="plan-feat"><span class="plan-check">✓</span>50 AI voice interviews / month</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Automated scoring & ranking</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Shortlist reports with summaries</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Candidate link sharing</div>
+          <div class="plan-feat"><span class="plan-check dim">–</span><span style="color:var(--text3)">Video interviews</span></div>
+          <div class="plan-feat"><span class="plan-check dim">–</span><span style="color:var(--text3)">ATS integrations</span></div>
+          <div class="plan-feat"><span class="plan-check dim">–</span><span style="color:var(--text3)">Custom scoring rubrics</span></div>
+        </div>
+        <button class="plan-cta plan-cta-outline">Get started →</button>
+      </div>
+
+      <!-- Growth — featured -->
+      <div class="plan-card featured">
+        <div class="plan-badge">Most Popular</div>
+        <div class="plan-name" style="color:var(--lime);">Growth</div>
+        <div class="plan-price">
+          <span class="plan-amount lime">Talk to us</span>
+        </div>
+        <div class="plan-sub">for pricing · voice + video interviews</div>
+        <div class="plan-divider"></div>
+        <div class="plan-features">
+          <div class="plan-feat"><span class="plan-check">✓</span>Voice + Video interviews</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Everything in Starter</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Adaptive AI questioning</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Multi-dimensional scoring (6 axes)</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>ATS integrations — Lever, Greenhouse</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Custom scoring rubrics per role</div>
+          <div class="plan-feat"><span class="plan-check dim">–</span><span style="color:var(--text3)">Dedicated CSM</span></div>
+        </div>
+        <button class="plan-cta plan-cta-lime" onclick="openModal()">Book a Demo →</button>
+      </div>
+
+      <!-- Custom -->
+      <div class="plan-card">
+        <div class="plan-name">Custom</div>
+        <div class="plan-price">
+          <span class="plan-amount" style="font-size:38px;letter-spacing:-1.5px;">Built for you</span>
+        </div>
+        <div class="plan-sub">unlimited · white-labelled · SLA-backed</div>
+        <div class="plan-divider"></div>
+        <div class="plan-features">
+          <div class="plan-feat"><span class="plan-check">✓</span>Unlimited AI interviews</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Everything in Growth</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>White-label AI persona & brand</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Full HRMS & ATS integration</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Dedicated CSM + SLA guarantee</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>Compliance & full audit logs</div>
+          <div class="plan-feat"><span class="plan-check">✓</span>On-premise deployment option</div>
+        </div>
+        <button class="plan-cta plan-cta-outline">Talk to Sales →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div id="faq" class="faq-wrap">
+  <div class="faq-inner">
+    <div class="faq-header">
+      <div class="section-label" style="text-align:center;">FAQ</div>
+      <h2 class="section-title" style="font-size:40px;">Common questions.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How does the AI interview actually work?
+          <div class="faq-chevron">▾</div>
+        </button>
+        <div class="faq-a">
+          Candidates receive a unique interview link via email or WhatsApp. They complete the interview at their own pace — on desktop or mobile. Our AI conducts a natural conversation, asking structured and adaptive questions tailored to the role. Responses are analyzed in real-time across multiple dimensions, and results are available to you instantly when they finish.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can candidates tell they're talking to an AI?
+          <div class="faq-chevron">▾</div>
+        </button>
+        <div class="faq-a">
+          Yes — we believe in full transparency. Candidates are informed upfront that they're completing an AI-powered screening interview. In practice, most candidates prefer this: there's no scheduling stress, no intimidation, and they can complete it on their own schedule. Completion rates on Shortlis8 are consistently above 78%.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How accurate is the AI scoring?
+          <div class="faq-chevron">▾</div>
+        </button>
+        <div class="faq-a">
+          Our scoring models are trained on thousands of real hiring outcomes. In blind studies with our customers, AI-shortlisted candidates had an 87% offer acceptance rate. Scores are calibrated per role type — a scoring rubric for a software engineer is completely different from one for a sales rep or a product manager.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Does Shortlis8 replace human interviewers entirely?
+          <div class="faq-chevron">▾</div>
+        </button>
+        <div class="faq-a">
+          No — and that's the point. Shortlis8 handles the volume screening so your best people focus exclusively on candidates who've already proven themselves. Think of it as the world's best screener that works 24/7, never gets tired, and never rushes a judgment.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How does Shortlis8 connect with our existing ATS?
+          <div class="faq-chevron">▾</div>
+        </button>
+        <div class="faq-a">
+          On Growth and Enterprise plans, Shortlis8 offers native integrations with Greenhouse, Lever, Workday, SAP SuccessFactors, and Zoho Recruit. We also expose a full REST API for custom integrations. Setup typically takes under 30 minutes with our onboarding team.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is candidate data secure and GDPR-compliant?
+          <div class="faq-chevron">▾</div>
+        </button>
+        <div class="faq-a">
+          Absolutely. Shortlis8 is SOC 2 Type II certified, GDPR compliant, and DPDP Act ready for Indian enterprises. All interview recordings and transcripts are encrypted at rest and in transit. Candidates can request deletion of their data at any time via a self-serve portal.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-content">
+      <div class="cta-eyebrow">Ready to transform hiring?</div>
+      <h2 class="cta-title">Meet your next great hire<br><em style="font-style:normal;color:var(--lime);">8x faster.</em></h2>
+      <p class="cta-sub">Join 2,400+ recruiters who've cut screening time by 80% and improved hire quality with Shortlis8.</p>
+      <div class="cta-btns">
+        <button class="btn-hero" onclick="openModal()">Book a Demo →</button>
+        <button class="btn-hero-ghost" onclick="openModal()">Talk to Sales</button>
+      </div>
+      <div class="cta-note">No setup fees · Free pilot available · Cancel anytime</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Shortlis<span>8</span></div>
+  <div class="footer-links">
+    <a class="footer-link" href="#">Privacy Policy</a>
+    <a class="footer-link" href="#">Terms of Service</a>
+    <a class="footer-link" href="#">Security</a>
+    <a class="footer-link" href="#">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 Shortlis8. All rights reserved.</div>
+</footer>
+<script>
+const SUPABASE_URL = "https://vahgqcifuysxgkxgiycp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhaGdxY2lmdXlzeGdreGdpeWNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1NjUyMjEsImV4cCI6MjA3MjE0MTIyMX0.H6BzujWec2iLEfy0_KtBGDlYSgHGR1YG5aPcPkFo3yU";
+
+// FIX: use window.supabase
+const { createClient } = window.supabase;
+
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
+
+
+
+</script>
+<script>
+  
+/* ── FAQ toggle ── */
+function toggleFaq(btn){
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+/* ── Smooth scroll ── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+/* ── Active nav highlight on scroll ── */
+const sections = ['how','features','pricing','faq'];
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const match = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+      if(match) match.classList.add('active');
+    }
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+sections.forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) observer.observe(el);
+});
+
+/* ── Nav border on scroll ── */
+window.addEventListener('scroll',()=>{
+  const nav = document.querySelector('nav');
+  nav.style.borderBottomColor = window.scrollY > 40
+    ? 'rgba(170,255,0,.08)'
+    : 'rgba(255,255,255,.07)';
+});
+
+/* ── Demo modal ── */
+function openModal(){
+  document.getElementById('demoModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('demoModal').classList.remove('open');
+  document.body.style.overflow='';
+  // reset after close
+  setTimeout(()=>{
+    document.getElementById('modalForm').style.display='block';
+    document.getElementById('modalSuccess').classList.remove('show');
+  },300);
+}
+// Close on overlay click
+document.getElementById('demoModal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+// Close on Escape
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeModal();
+});
+
+async function submitDemo() {
+  const first_name = document.getElementById('f-fname').value.trim();
+  const last_name = document.getElementById('f-lname').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const company = document.getElementById('f-company').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const team_size = document.getElementById('f-size').value;
+
+  const { error } = await supabaseClient
+    .from('demo_requests')
+    .insert([{ first_name, last_name, email, company, phone, team_size }]);
+
+  if (error) {
+    console.error(error);
+    alert("Error saving data");
+    return;
+  }
+
+  document.getElementById('s-email').textContent = email;
+  document.getElementById('modalForm').style.display = 'none';
+  document.getElementById('modalSuccess').classList.add('show');
+}
+// Reset red borders on input
+document.querySelectorAll('.modal-input').forEach(inp=>{
+  inp.addEventListener('input',()=> inp.style.borderColor='');
+});
+</script>
+</body>
+</html>
